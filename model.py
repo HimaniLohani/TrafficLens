@@ -3,64 +3,67 @@ import pandas as pd
 from preprocess import load_data, add_congestion_column
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-import joblib
 
 def train_model():
+    # Load data
     df = load_data()
+
+    # Add congestion labels
     df = add_congestion_column(df)
 
-    X = df[["hour", "day"]]
+    # 🔥 NEW FEATURE (important)
+    df["is_peak"] = df["hour"].apply(
+        lambda x: 1 if x in [8, 9, 10, 17, 18, 19] else 0
+    )
+
+    # Features & target
+    X = df[["hour", "day", "is_peak"]]
     y = df["congestion"]
 
+    # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
 
+    # 🔥 IMPROVED MODEL
     model = RandomForestClassifier(
-        n_estimators=100,
-        max_depth=5,
+        n_estimators=200,
+        max_depth=10,
+        class_weight="balanced",   # 🔥 fix imbalance
         random_state=42
     )
 
     model.fit(X_train, y_train)
 
+    # Accuracy check
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
 
-    # Feature importance
-    print("\nFeature Importance:")
-    for col, val in zip(X.columns, model.feature_importances_):
-        print(f"{col}: {val:.2f}")
+    print("Model Accuracy:", accuracy)
 
-    # Save model
-    joblib.dump(model, "traffic_model.pkl")
+    # 🔥 DEBUG (important)
+    print("\nClass Distribution:")
+    print(y.value_counts())
 
     return model, accuracy
 
 
-def load_saved_model():
-    return joblib.load("traffic_model.pkl")
-
-
 def predict_congestion(model, hour, day):
-    if not (0 <= hour <= 23):
-        raise ValueError("Hour must be between 0-23")
+    is_peak = 1 if hour in [8, 9, 10, 17, 18, 19] else 0
 
-    if not (1 <= day <= 7):
-        raise ValueError("Day must be between 1-7")
+    input_data = pd.DataFrame(
+        [[hour, day, is_peak]],
+        columns=["hour", "day", "is_peak"]
+    )
 
-    input_data = pd.DataFrame([[hour, day]], columns=["hour", "day"])
-
-    prediction = model.predict(input_data)[0]
-    probability = model.predict_proba(input_data).max()
-
-    return prediction, probability
+    prediction = model.predict(input_data)
+    return prediction[0]
 
 
+# 🔥 TEST RUN
 if __name__ == "__main__":
     model, acc = train_model()
-    print("\nModel Accuracy:", acc)
 
-    result, prob = predict_congestion(model, 9, 1)
-    print("Prediction:", result)
-    print("Confidence:", prob)
+    print("\nSample Predictions:")
+    for h in [6, 9, 14, 18, 22]:
+        print(f"Hour {h} ->", predict_congestion(model, h, 1))
