@@ -9,11 +9,10 @@ The goal is to help in **smart traffic management, route optimization, and conge
 
 ## 🎯 Features
 
-* 📊 Exploratory Data Analysis (EDA) with visualizations
-* 🤖 Machine Learning models for prediction
-* 📈 Traffic trend analysis (hourly/daily patterns)
-* 🔍 Feature engineering (time, day, peak hours)
-* 🚀 (Optional) Interactive UI using Streamlit
+* 🗺️ Interactive map with route visualization
+* 📍 Location search (local + API-based)
+* 🚦 Traffic prediction (Low / Medium / High)
+* 📏 Distance calculation between locations
 
 ---
 
@@ -30,25 +29,27 @@ The goal is to help in **smart traffic management, route optimization, and conge
 ## 📂 Project Structure
 
 ```
-traffic-predictor/
-│── data/                # Dataset files
-│── notebooks/           # Jupyter notebooks (EDA & training)
-│── models/              # Saved models
-│── app.py               # Streamlit app (if implemented)
-│── requirements.txt     # Dependencies
-│── README.md            # Project documentation
+traffic-congestion-predictor/
+│── data/                  
+│── model.py              # ML model training & prediction
+│── generate_data.py      # Synthetic dataset generator
+│── preprocess.py         # Data preprocessing
+│── ui.py                 # UI components
+│── app.py                # Streamlit app
+│── requirements.txt      
+│── README.md             
 ```
 
 ---
-
 ## 📊 Dataset
 
-The dataset contains traffic-related information such as:
+This project uses a **synthetically generated dataset** that simulates real-world traffic patterns based on:
 
-* Date & Time
-* Traffic Volume
-* Road/Area details (if available)
+- Hour of the day (peak vs non-peak)
+- Day of the week (weekday vs weekend)
+- Vehicle count (simulated traffic density)
 
+The dataset is generated using `generate_data.py`.
 ---
 
 ## ⚙️ How It Works
@@ -79,16 +80,17 @@ pip install -r requirements.txt
 ### 3. Run the project
 
 ```bash
-python app.py
+python -m streamlit run app.py
 ```
 
 ---
 
 ## 📈 Results
 
-* Model trained to predict traffic with good accuracy
-* Identified peak traffic hours and trends
-* Improved prediction using feature engineering
+- Successfully predicts traffic levels (Low, Medium, High)
+- Handles peak-hour congestion patterns effectively
+- Provides route-based visualization with distance
+- Improved model performance using synthetic realistic data
 
 ---
 
