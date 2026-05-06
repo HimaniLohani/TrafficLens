@@ -1,4 +1,4 @@
-# 🚦 Traffic Prediction System
+# 🚦 TrafficLens
 
 ## 📌 Overview
 
